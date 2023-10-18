@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmoothBrainEditor.GameProject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,20 @@ namespace SmoothBrainEditor
         public MainWindow()
         {
             InitializeComponent();
+            Loaded += OnMainWindowLoaded;
+        }
+
+        private void OnMainWindowLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnMainWindowLoaded;
+            OpenProjectBrowser();
+        }
+
+        private void OpenProjectBrowser()
+        {
+            var projectBrowser = new ProjectBrowser();
+            if (projectBrowser.ShowDialog() == false) Application.Current.Shutdown();
+            else { };
         }
     }
 }
