@@ -39,6 +39,7 @@ namespace SmoothBrainEditor.GameProject
             set
             {
                 _projectName = value;
+                ValidateProjectPath();
                 OnPropertyChanged(nameof(ProjectName));
             }
         }
@@ -52,7 +53,38 @@ namespace SmoothBrainEditor.GameProject
                 if (_projectPath != value)
                 {
                     _projectPath = value;
+                    ValidateProjectPath();
                     OnPropertyChanged(nameof(ProjectPath));
+                }
+            }
+        }
+
+        private bool _isValid;
+
+        public bool IsValid
+        {
+            get => _isValid;
+            set
+            {
+                if (_isValid != value) 
+                {
+                    _isValid = value;
+                    OnPropertyChanged(nameof(IsValid));
+                }
+            }
+        }
+
+        private string _errorMsg;
+
+        public string ErrorMsg
+        {
+            get => _errorMsg;
+            set
+            {
+                if (_errorMsg != value) 
+                {
+                _errorMsg = value;
+                OnPropertyChanged(nameof(ErrorMsg));
                 }
             }
         }
@@ -61,6 +93,46 @@ namespace SmoothBrainEditor.GameProject
         public ReadOnlyObservableCollection<ProjectTemplate> ProjectTemplates
         { get; }
 
+        private bool ValidateProjectPath()
+        {
+            var path = ProjectPath;
+            if (!Path.EndsInDirectorySeparator(path))
+            {
+                path += @"\";
+            }
+
+            path += $@"{ProjectName}\";
+            IsValid = false;
+
+            if (string.IsNullOrWhiteSpace(ProjectName.Trim()))
+            {
+                ErrorMsg = "Type in a project name!";
+            }
+            else if (ProjectName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            {
+                ErrorMsg = "Invalid Character(s) in project name!";
+            }
+            else if (string.IsNullOrWhiteSpace(ProjectPath.Trim()))
+            {
+                ErrorMsg = "Select a valid project folder!";
+            }
+            else if (ProjectPath.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            {
+                ErrorMsg = "Invalid Character(s) in project path!";
+            }
+            else if (Directory.Exists(path) && Directory.EnumerateFileSystemEntries(path).Any())
+            {
+                ErrorMsg = "Selected folder already has project and is not empty";
+            }
+            else
+            {
+                ErrorMsg = "";
+                IsValid = true;
+                
+            }
+
+            return IsValid;
+        }
         public NewProject()
         {
             ProjectTemplates = new ReadOnlyObservableCollection<ProjectTemplate>(_projectTemplates);
@@ -79,6 +151,7 @@ namespace SmoothBrainEditor.GameProject
 
                     _projectTemplates.Add(template);
                 }
+                ValidateProjectPath();
             }
             catch(Exception ex)
             {
