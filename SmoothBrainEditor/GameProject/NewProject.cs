@@ -44,7 +44,7 @@ namespace SmoothBrainEditor.GameProject
             }
         }
 
-        private string _projectPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\KoalaProject\";
+        private string _projectPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}\KoalaProjects\";
         public string ProjectPath
         {
             get => _projectPath;
@@ -164,7 +164,11 @@ namespace SmoothBrainEditor.GameProject
                 File.Copy(template.IconFilePath, Path.GetFullPath(Path.Combine(dirinfo.FullName, "Icon.png")));
                 File.Copy(template.ScreenshotFilePath, Path.GetFullPath(Path.Combine(dirinfo.FullName, "Screenshot.png")));
 
-                return "";
+                var projectXml = File.ReadAllText(template.ProjectFilePath);
+                projectXml = string.Format(projectXml, ProjectName, ProjectPath);
+                var projectPath = Path.GetFullPath(Path.Combine(path, $"{ProjectName}{Project.Extension}"));
+                File.WriteAllText(projectPath, projectXml);
+                return path;
             }
             catch (Exception ex)
             {
