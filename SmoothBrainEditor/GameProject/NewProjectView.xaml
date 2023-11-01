@@ -40,6 +40,6 @@
             <Button Content="Create" Width="96" IsDefault="True" IsEnabled="{Binding IsValid}"/>
             <Button Content="Exit" Width="96" Margin="30,0,0,0" IsCancel="True" />
         </StackPanel>
-        <TextBlock Text="{Binding ErrorMsg}" Margin="0,20,0,0" HorizontalAlignment="Center" />
+        <TextBlock Text="{Binding ErrorMsg}" FontSize="20" Foreground="Red" Margin="0,20,0,0" HorizontalAlignment="Center" />
     </StackPanel>
 </UserControl>

@@ -133,6 +133,45 @@ namespace SmoothBrainEditor.GameProject
 
             return IsValid;
         }
+
+        public string CreateProject(ProjectTemplate template)
+        {
+            ValidateProjectPath();
+            if (!IsValid)
+            {
+                return string.Empty;
+            }
+
+            if (!Path.EndsInDirectorySeparator(ProjectPath))
+            {
+                ProjectPath += @"\";
+            }
+
+            var path = $@"{ProjectPath}{ProjectName}\";
+
+            try
+            {
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                foreach (var folder in template.folders) 
+                {
+                    Directory.CreateDirectory(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(path), folder)));
+                }
+                var dirinfo = new DirectoryInfo(path + @".Koala\");
+                dirinfo.Attributes |= FileAttributes.Hidden;
+                File.Copy(template.IconFilePath, Path.GetFullPath(Path.Combine(dirinfo.FullName, "Icon.png")));
+                File.Copy(template.ScreenshotFilePath, Path.GetFullPath(Path.Combine(dirinfo.FullName, "Screenshot.png")));
+
+                return "";
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return string.Empty;
+            }
+        }
         public NewProject()
         {
             ProjectTemplates = new ReadOnlyObservableCollection<ProjectTemplate>(_projectTemplates);
